@@ -9,7 +9,10 @@ export function ThemeToggle() {
 
   // Toggle between light and dark theme
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    // Force the theme to switch between light and dark
+    const newTheme = theme === "dark" ? "light" : "dark";
+    console.log("Current theme:", theme, "Switching to:", newTheme);
+    setTheme(newTheme);
   };
 
   return (
