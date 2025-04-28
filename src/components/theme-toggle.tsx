@@ -1,37 +1,43 @@
-
+import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "./theme-provider";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function ThemeToggle() {
-  const { setTheme, theme } = useTheme();
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return document.documentElement.classList.contains("dark");
+    }
+    return false;
+  });
 
-  // Toggle between light and dark theme
-  const toggleTheme = () => {
-    // Force the theme to switch between light and dark
-    const newTheme = theme === "dark" ? "light" : "dark";
-    console.log("Current theme:", theme, "Switching to:", newTheme);
-    setTheme(newTheme);
-  };
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
+
+  useEffect(() => {
+    // On mount, check localStorage
+    const theme = localStorage.getItem("theme");
+    if (theme === "dark") setIsDark(true);
+    if (theme === "light") setIsDark(false);
+  }, []);
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-          className="hover:bg-accent"
-        >
-          <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>Toggle theme</p>
-      </TooltipContent>
-    </Tooltip>
+    <button
+      onClick={() => setIsDark((prev) => !prev)}
+      className="rounded-full p-2 hover:bg-accent transition-colors border border-border bg-background"
+      aria-label="Toggle theme"
+      type="button"
+    >
+      {isDark ? (
+        <Sun className="h-5 w-5 text-yellow-500" />
+      ) : (
+        <Moon className="h-5 w-5 text-blue-900" />
+      )}
+    </button>
   );
-}
+} 
