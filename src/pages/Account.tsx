@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 const Account = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -13,14 +15,46 @@ const Account = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Implement login logic
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Success",
-        description: "You have been logged in successfully.",
+    const form = e.target as HTMLFormElement;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
-    }, 1000);
+      const data = await res.json();
+      if (!res.ok) {
+        if (res.status === 400 && data.message === "Invalid credentials.") {
+          toast({
+            title: "No account found",
+            description: "No account found for this email. Please create a new account first.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Login failed",
+            description: data.message || "An error occurred.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Success",
+          description: "You have been logged in successfully.",
+        });
+        // Optionally: save token, redirect, etc.
+      }
+    } catch (err) {
+      toast({
+        title: "Network error",
+        description: "Could not connect to server.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -58,6 +92,7 @@ const Account = () => {
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
+                      name="email"
                       type="email"
                       placeholder="m@example.com"
                       required
@@ -67,6 +102,7 @@ const Account = () => {
                     <Label htmlFor="password">Password</Label>
                     <Input
                       id="password"
+                      name="password"
                       type="password"
                       required
                     />
