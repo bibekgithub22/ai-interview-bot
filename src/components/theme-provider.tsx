@@ -44,12 +44,14 @@ export function ThemeProvider({
       return
     }
 
+    console.log("Applying theme:", theme);
     root.classList.add(theme)
   }, [theme])
 
   const value = {
     theme,
     setTheme: (theme: Theme) => {
+      console.log("Setting theme to:", theme);
       localStorage.setItem(storageKey, theme)
       setTheme(theme)
     },

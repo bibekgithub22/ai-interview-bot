@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -118,13 +117,19 @@ export default {
 						opacity: '1',
 						transform: 'scale(1)'
 					}
-				}
+				},
+				scroll: {
+					to: {
+						transform: 'translate(calc(-50% - 0.5rem))',
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
 				'scale-in': 'scale-in 0.2s ease-out',
+				scroll: 'scroll 25s linear infinite',
 			}
 		}
 	},
