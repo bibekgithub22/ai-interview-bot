@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +8,7 @@ import LandingPage from "./pages/LandingPage";
 import ProfileSetup from "./pages/ProfileSetup";
 import InterviewSession from "./pages/InterviewSession";
 import ResultsPage from "./pages/ResultsPage";
+import ContactUs from "./pages/ContactUs";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -27,6 +27,7 @@ const App = () => (
               <Route path="profile" element={<ProfileSetup />} />
               <Route path="interview" element={<InterviewSession />} />
               <Route path="results" element={<ResultsPage />} />
+              <Route path="contact-us" element={<ContactUs />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

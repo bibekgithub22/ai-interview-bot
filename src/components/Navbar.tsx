@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -19,6 +18,9 @@ const Navbar = () => {
               </Link>
               <Link to="/profile" className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
                 Start Practice
+              </Link>
+              <Link to="/contact-us" className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                Contact
               </Link>
             </nav>
             <ThemeToggle />
