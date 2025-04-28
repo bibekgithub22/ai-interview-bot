@@ -6,68 +6,96 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+type User = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+const LOCAL_STORAGE_KEY = "demo_users";
+
+function getUsers(): User[] {
+  const users = localStorage.getItem(LOCAL_STORAGE_KEY);
+  return users ? JSON.parse(users) : [];
+}
+
+function saveUser(user: User) {
+  const users = getUsers();
+  users.push(user);
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(users));
+}
+
+function findUser(email: string): User | undefined {
+  return getUsers().find((u: User) => u.email === email);
+}
 
 const Account = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Login
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     const form = e.target as HTMLFormElement;
     const email = (form.elements.namedItem("email") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
-    try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        if (res.status === 400 && data.message === "Invalid credentials.") {
-          toast({
-            title: "No account found",
-            description: "No account found for this email. Please create a new account first.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Login failed",
-            description: data.message || "An error occurred.",
-            variant: "destructive",
-          });
-        }
+
+    setTimeout(() => {
+      const user = findUser(email);
+      if (!user || user.password !== password) {
+        toast({
+          title: "Login failed",
+          description: "Invalid email or password.",
+          variant: "destructive",
+        });
       } else {
         toast({
           title: "Success",
-          description: "You have been logged in successfully.",
+          description: `Welcome back, ${user.name}!`,
         });
-        // Optionally: save token, redirect, etc.
       }
-    } catch (err) {
-      toast({
-        title: "Network error",
-        description: "Could not connect to server.",
-        variant: "destructive",
-      });
-    } finally {
       setIsLoading(false);
-    }
+    }, 700);
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+  // Signup
+  const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Implement signup logic
+    const form = e.target as HTMLFormElement;
+    const name = (form.elements.namedItem("name") as HTMLInputElement).value;
+    const email = (form.elements.namedItem("signup-email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("signup-password") as HTMLInputElement).value;
+    const confirmPassword = (form.elements.namedItem("confirm-password") as HTMLInputElement).value;
+
     setTimeout(() => {
-      setIsLoading(false);
+      if (password !== confirmPassword) {
+        toast({
+          title: "Error",
+          description: "Passwords do not match.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+      if (findUser(email)) {
+        toast({
+          title: "Error",
+          description: "An account with this email already exists.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+      saveUser({ name, email, password });
       toast({
-        title: "Success",
-        description: "Your account has been created successfully.",
+        title: "Account created",
+        description: "You can now log in with your new account.",
       });
-    }, 1000);
+      setIsLoading(false);
+      form.reset();
+    }, 700);
   };
 
   return (
@@ -77,14 +105,14 @@ const Account = () => {
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">Account</CardTitle>
             <CardDescription className="text-center">
-              Choose your preferred sign in method
+              Login or create a new account (demo, local only)
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger value="signup">Create Account</TabsTrigger>
               </TabsList>
               <TabsContent value="login">
                 <form onSubmit={handleLogin} className="space-y-4">
@@ -118,6 +146,7 @@ const Account = () => {
                     <Label htmlFor="name">Full Name</Label>
                     <Input
                       id="name"
+                      name="name"
                       placeholder="John Doe"
                       required
                     />
@@ -126,6 +155,7 @@ const Account = () => {
                     <Label htmlFor="signup-email">Email</Label>
                     <Input
                       id="signup-email"
+                      name="signup-email"
                       type="email"
                       placeholder="m@example.com"
                       required
@@ -135,6 +165,7 @@ const Account = () => {
                     <Label htmlFor="signup-password">Password</Label>
                     <Input
                       id="signup-password"
+                      name="signup-password"
                       type="password"
                       required
                     />
@@ -143,6 +174,7 @@ const Account = () => {
                     <Label htmlFor="confirm-password">Confirm Password</Label>
                     <Input
                       id="confirm-password"
+                      name="confirm-password"
                       type="password"
                       required
                     />
