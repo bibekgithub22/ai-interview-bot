@@ -22,6 +22,9 @@ const Navbar = () => {
               <Link to="/contact-us" className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
                 Contact
               </Link>
+              <Link to="/account" className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                Account
+              </Link>
             </nav>
             <ThemeToggle />
           </div>

@@ -9,6 +9,7 @@ import ProfileSetup from "./pages/ProfileSetup";
 import InterviewSession from "./pages/InterviewSession";
 import ResultsPage from "./pages/ResultsPage";
 import ContactUs from "./pages/ContactUs";
+import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="interview" element={<InterviewSession />} />
               <Route path="results" element={<ResultsPage />} />
               <Route path="contact-us" element={<ContactUs />} />
+              <Route path="account" element={<Account />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
